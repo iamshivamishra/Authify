@@ -4,45 +4,61 @@ import Link from "next/link"
 import React, { useEffect } from "react"
 import axios from "axios"
 import { useRouter } from "next/navigation"
-import { set } from "mongoose"
 import toast from "react-hot-toast"
 
 export default function Login() {
+
   const router = useRouter()
 
   const [user, setUser] = React.useState({
     email: "",
     password: "",
   })
-  const [buttonDisabled, setButtonDisabled] = React.useState(false) 
+
+  const [buttonDisabled, setButtonDisabled] = React.useState(true)
 
   const [loading, setLoading] = React.useState(false)
 
-
   const onLogin = async () => {
-   try {
-     setLoading(true);
-     const response = await axios.post('/api/users/login', user)
-     console.log('Login success', response.data)
-     toast.success('Login success')
-     router.push('/profile')
-   } catch (error: any) {
-    console.log('Login failed',error.message)
-    toast.error(error.message);
-   }finally{
-    setLoading(false)
-   }
+
+    try {
+
+      setLoading(true)
+
+      const response = await axios.post('/api/users/login', user)
+
+      console.log('Login success', response.data)
+
+      toast.success('Login successful')
+
+      // Login ke baad home page pe redirect
+      router.push('/')
+
+    } catch (error: any) {
+
+      console.log('Login failed', error.message)
+
+      toast.error('Login failed')
+
+    } finally {
+
+      setLoading(false)
+
+    }
   }
 
-  useEffect(()=> {
-  if(user.email.length > 0 && user.password.length > 0){
-   setButtonDisabled(false)
-  }else{
-   setButtonDisabled(true)
-  }
-  },[user])
+  useEffect(() => {
+
+    if (user.email.length > 0 && user.password.length > 0) {
+      setButtonDisabled(false)
+    } else {
+      setButtonDisabled(true)
+    }
+
+  }, [user])
 
   return (
+
     <div className="min-h-screen bg-black flex items-center justify-center px-4">
 
       <div className="w-full max-w-md bg-zinc-900 border border-zinc-800 rounded-2xl p-8 shadow-2xl">
@@ -53,7 +69,7 @@ export default function Login() {
         </h1>
 
         <p className="text-zinc-400 text-center mb-8">
-          {loading? "Logging in...": "Login to your account"}
+          {loading ? "Logging in..." : "Login to your account"}
         </p>
 
         {/* Email */}
@@ -105,7 +121,7 @@ export default function Login() {
         {/* Button */}
         <button
           onClick={onLogin}
-          disabled={loading}
+          disabled={buttonDisabled || loading}
           className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 transition-all duration-300 text-white font-semibold py-3 rounded-xl"
         >
           {loading ? "Loading..." : "Login"}
